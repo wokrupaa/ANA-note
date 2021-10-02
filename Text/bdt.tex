@@ -1,0 +1,176 @@
+\subsection{Boosted Decision Tree}
+
+ Several MVA algorithms have been investigated, and a BDT algorithm with the gradient boost method using the  XGBoost framework \cite{XGBOOST} has been used to reduce the contribution of combinatorial background. The XGBoost library offers implementation of gradient boosting algorithms,
+ 
+ Separate algoriths have been developed to reduce combinatorial background (\Bs BDT) and another to improve selection of \Kstarm(892) candidates (\Kstarm BDT). Since the downstream and long tracks have different properties, a separate algorithm was trained for both types of tracks. This apporach is applied for both algorithms: \Bs BDT and \Kstarm BDT.
+ 
+\subsubsection{Configuration of the algorthm }
+
+In order to reduce this dangerous over-fitting, some hyperparameters of the classifier
+are adjusted:
+
+\begin{itemize}
+    \item \textit{learning rate - $\eta$} is used to prevents overfitting. $\eta$ 
+    Learnig rate after each boosting step, shrinks the feature weights to make the boosting process more conservative.
+    
+    \item \textit{maximum depth} of a tree. Higher maximum depth make the model more complex and more likely to overfit. 
+    
+    \item \textit{minimum child weight} is a minimum sum of instance weight needed in a child. If the leaf node with the sum of instance weight is less than minimum child weight then the building process will give up further partitioning. 
+    \item \textit{gamma} is a minimum loss reduction required to make a further partition on a leaf node of the tree. The larger gamma is, the more conservative the algorithm will be.
+    
+    \item \textit{subsample:} is a  ratio of the training sample. As a default is set to  0.5 what means that algorithm would randomly sample half of the training data prior to growing trees. and this will prevent overfitting. Subsampling will occur once in every boosting iteration.
+    
+\end{itemize}
+
+The following parametrisation has been choosed in order to increase efficiency of algorithm:
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{ p{3.6cm}p{3.1cm}}
+\hline
+\hline
+Hyperparamter  &   Value \\
+\hline
+    learning rate    & 1638	\\
+    maximum depth    & 1638	\\
+    minimum child weighte    & 1638	\\
+    gamma    & 1638	\\
+    subsample    & 1638	\\
+    
+\hline
+\caption{kk}
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsubsection{Description of physics variables }
+
+Besides a number of standard variables, a feature that estimates the imbalance of $p_T$ around the \Bs candidate momentum vector is also used. It is defined as
+
+\begin{equation}
+I_{p_T} = \frac{p_T(\Bs) - \sum p_T}{p_T(\Bs) + \sum p_T}
+\label{eq::bdt_1}
+\end{equation}
+
+ where the sum is taken over all other charged tracks inconsistent with \Bs candidate. This cone is defined by a circle with a radius of 1.5 units in the plane of pseudorapidity and azimuthal angle (both defined below and expressed in radians). The $I_{p_T}$  enhance the selection of \Bs candidates.
+ 
+ Another variables related to resonance states is $\Delta_R$:
+
+\begin{equation}
+\Delta_R(\Dsp) = \sqrt{(\eta(D_s)-\eta(\gamma))^2+(\phi(D_S)-\phi(\gamma))^2}
+\label{eq::bdt_2}
+\end{equation}
+ 
+is also defined similarly for \Kstarm resonance, where $\eta$ and $\phi$ are the pseudorapidity and azimuthal angle in the LHCb lab. frame (the right-handed Cartesian system is being used, with the $z$ axis pointing along the beams direction). The polar angle - $\theta$, is measured with respect to the $z$ axis, the azimuthal angle - $\phi$, is the angle with respect to the $x$ axis of the projection in the $xy$ plane. The rapidity and pseudorapidity are defined as :
+
+\begin{align} 
+y = \frac{1}{2}ln(\frac{E+p_z}{E-p_z}) \\
+\eta =- ln (tan \frac{\theta}{2})
+\label{eq::bdt_3}
+\end{align}
+
+The $\Delta_R$ is known to be invariant under boost along the beams axis.  As the typical radius of a hadron jet in the $\eta-\phi$ plane has been measured to be about 1, expected value of $\Delta_R$ should be below 1.
+
+The radial flight distance is defined as:
+
+\begin{equation}
+RFD(\Dsp) = \frac{Vx(\Dsp,z)-Vx(\Bs,z)}{\sigma_{Vx(\Dsp,z)}^2+\sigma_{Vx(\Bs,z)}^2}
+\label{eq::bdt_4}
+\end{equation}
+
+where $\sigma_z$ stands for error in $z$ vertex position of particle. The $RFD$ variables is also used in selection of \KS mesons.
+\subsubsection{Description of \Bs algorithm }
+
+For \Bs BDT, a simulated sample was employed with generator level cuts and true matching applied. The background sample is data high mass sideband region of the \Bs mass (above 5600 MeV). For \Kstarm BDT, the same simulated sample with the same  true matching selection and \Kstarm low and high mass sideband region (belove 847 MeV and above 937 MeV).
+
+\subsubsection{Description of \Kstar algorithm }
+
+
+\subsubsection{\Bs algorithm}
+
+Initial set of variables was investigated:
+
+\begin{enumerate}
+
+   \item \Dssp  and \Dssp daughters \\
+    The $\Delta_R$ distance for \Dssp: $\Delta_R(\Dssp)$, the \Dsp impact parameter \chisq w.r.t PV: \Dsp IP\chisq, the \Dsp radial flight distance, RFD(\Dsp),  the \Dsp \chisq of the vertex: \Dsp Vx \chisq, the \g transverse momentum: \g $PT$, the \g condence level, \g CL, condence level is the probability that the Calo object tagged as a photon is indeed a photon. For true photons this variable peaks at 1, for fake photons - at 0.
+    
+   \item \Dsp daughters \\
+   The ProbNN variables built using multivariate techniques by combining tracking and PID information from each sub-system into a single probability value for each particle hypothesis (kaon, pion, proton): \Kp, \Km ProbNNK and \pip ProbNNpi.
+   %The transverse momenta:  \Kp, \Km, \pip $P_T$, the impact parameter \chisq w.r.t PV: \Kp, \Km, \pip IP\chisq, :
+   
+    \item \Bs meson \\
+    The impact parameter \chisq w.r.t PV: \Bs IP\chisq, the $P_T$ asymmetry: $I_{p_T}$, the \chisqndf of the lifetime: \Bs $\tau$ \chisqndf, the \chisqndf of the end vertex: 
+    \Bs Vx \chisq
+  
+\end{enumerate}
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{ p{2cm}p{5cm} }
+\hline
+\hline
+ Track type & Variable \\
+ \hline
+         & \Bs IP\chisq  \\
+         & $I_{p_T}$ \\
+         & \Bs $\tau$ \chisqndf \\
+         & \Bs Vx \chisqndf  \\
+         & \g $P_T$  \\
+         & \g CL  \\
+         & h1 ProbNNk  \\
+         & h2 ProbNNk(pi)  \\
+         & h3 ProbNNk(pi)  \\
+         & $\Delta_R$ \Dss  \\
+         & \Dsp IP\chisq  \\
+         &  RFD(\Dsp)  \\
+         & \Dsp Vx\chisq  \\
+         & $\Delta_R$ \Dss  \\
+
+\hline
+\end{tabular}
+\caption{BDT input variables}
+\label{tab:BDT_var}
+\end{center}
+\end{table}%  
+
+\subsubsection{\Kstarm algorithm}
+
+Again, initial set of variables was investigated:
+
+\begin{enumerate}
+
+   \item \Kstarm  and \Kstarm daughters \\ 
+   The $\Delta_R$ distance for \Kstarm: $\Delta_R(\Kstarm)$\\ 
+   Classifier for long tracks: minimum and maximum impact parameter  \chisq w.r.t PV of \KS daughters: $\pip$, $\pim$ IP$\chisq_{max}$, IP$\chisq_{min}$, the \KS flight distance \chisq:  \KS FD\chisq, the \KS impact parameter \chisq w.r.t PV: \KS IP\chisq \\ 
+   Classifier for downstream tracks: the \KS transverse momentum: \KS $P_T$ 
+
+
+\end{enumerate}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{ p{2cm}p{5cm} }
+\hline
+\hline
+ Track type & Variable \\
+ \hline
+         & $\Delta_R$ \Kstar  \\
+         & \KS FD\chisq  \\
+         & \\
+        DD & \KS daughter 1 $P_T$  \\
+        DD & \KS daughter 2 $P_T$  \\
+         & \\
+        LL & \KS daughter 1 IP$\chisq_{max}$  \\
+        LL & \KS daughter 2 IP$\chisq_{max}$  \\
+        LL & \KS daughter 1 IP$\chisq_{min}$  \\
+        LL & \KS daughter 2 IP$\chisq_{min}$  \\        
+        LL & \KS $\chi^2_{IP}$  \\
+
+\hline
+\end{tabular}
+\caption{BDT input variables}
+\label{tab:BDT_var}
+\end{center}
+\end{table}%   
+   
